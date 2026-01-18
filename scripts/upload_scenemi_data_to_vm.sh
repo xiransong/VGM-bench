@@ -9,7 +9,7 @@ echo "============================================================"
 VM_USER="ubuntu"
 VM_HOST=$1
 
-ARCHIVE="$HOME/scenemi_transfer/scenemi_assets.tar.gz"
+ARCHIVE="$HOME/scenemi_transfer/scenemi_data_final.tar.gz"
 
 if [ ! -f "$ARCHIVE" ]; then
   echo "[ERROR] Archive not found: $ARCHIVE"

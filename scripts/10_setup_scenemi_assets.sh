@@ -2,77 +2,62 @@
 set -euo pipefail
 
 echo "============================================================"
-echo "[INFO] Setting up SceneMI assets (with repo-local symlinks)"
+echo "[INFO] Installing SceneMI data into repo (final layout)"
 echo "============================================================"
 
 SCRATCH="$HOME/scratch"
-ARCHIVE="$SCRATCH/scenemi_assets.tar.gz"
+ARCHIVE="$SCRATCH/scenemi_data_final.tar.gz"
 SCENEMI_ROOT="$SCRATCH/repos/SceneMI"
 
 ###############################################################################
-# Check inputs
+# Preconditions
 ###############################################################################
 if [ ! -f "$ARCHIVE" ]; then
-  echo "[ERROR] Asset archive not found: $ARCHIVE"
+  echo "[ERROR] Data archive not found: $ARCHIVE"
   exit 1
 fi
 
 if [ ! -d "$SCENEMI_ROOT" ]; then
-  echo "[ERROR] SceneMI repo not found at: $SCENEMI_ROOT"
+  echo "[ERROR] SceneMI repo not found: $SCENEMI_ROOT"
   exit 1
 fi
 
 ###############################################################################
-# Extract assets into scratch
+# Clean existing data (idempotent)
 ###############################################################################
-echo "[INFO] Extracting assets into $SCRATCH ..."
-tar -xzf "$ARCHIVE" -C "$SCRATCH"
+echo "[INFO] Cleaning existing data directories..."
 
-###############################################################################
-# Create repo-local symlinks (SceneMI expects relative paths)
-###############################################################################
-echo "[INFO] Creating repo-local symlinks..."
+rm -rf "$SCENEMI_ROOT/body_models"
+rm -rf "$SCENEMI_ROOT/dataset"
 
-cd "$SCENEMI_ROOT"
-
-# --- SMPL-X models (repo expects ./body_models) ---
-rm -rf body_models
-ln -s "$SCRATCH/body_models" body_models
-
-# --- TRUMANS dataset (repo expects ./dataset/TRUMANS) ---
-rm -rf dataset
-mkdir -p dataset
-ln -s "$SCRATCH/datasets/TRUMANS" dataset/TRUMANS
+mkdir -p "$SCENEMI_ROOT"
 
 ###############################################################################
-# SMPL-X compatibility symlinks (SceneMI expects flat layout)
+# Extract directly into repo
 ###############################################################################
-echo "[INFO] Creating SMPL-X compatibility symlinks..."
+echo "[INFO] Extracting data into SceneMI repo..."
 
-SMPLX_SRC="$SCRATCH/body_models/smplx/models/smplx"
-SMPLX_DST="$SCENEMI_ROOT/body_models/smplx"
-
-mkdir -p "$SMPLX_DST"
-
-for f in SMPLX_MALE.npz SMPLX_FEMALE.npz SMPLX_NEUTRAL.npz; do
-  rm -f "$SMPLX_DST/$f"
-  ln -s "$SMPLX_SRC/$f" "$SMPLX_DST/$f"
-done
+tar -xzf "$ARCHIVE" -C "$SCENEMI_ROOT"
 
 ###############################################################################
 # Sanity checks
 ###############################################################################
 echo "[INFO] Running sanity checks..."
 
-ls body_models/smplx/models/smplx >/dev/null
-ls dataset/TRUMANS/Data_release >/dev/null
+ls "$SCENEMI_ROOT/body_models/smplx/SMPLX_MALE.npz" >/dev/null
+ls "$SCENEMI_ROOT/body_models/smplx/SMPLX_FEMALE.npz" >/dev/null
+ls "$SCENEMI_ROOT/body_models/smplx/SMPLX_NEUTRAL.npz" >/dev/null
+
+ls "$SCENEMI_ROOT/datasets/TRUMANS/Data_release" >/dev/null || \
+ls "$SCENEMI_ROOT/dataset/TRUMANS/Data_release" >/dev/null
 
 ###############################################################################
 # Final message
 ###############################################################################
 echo "============================================================"
-echo "✅ SceneMI assets installed and linked correctly"
-echo "📌 SMPL-X (repo): $SCENEMI_ROOT/body_models"
-echo "📌 TRUMANS (repo): $SCENEMI_ROOT/dataset/TRUMANS"
+echo "✅ SceneMI data installed successfully"
+echo "📌 Repo: $SCENEMI_ROOT"
+echo "📌 SMPL-X: body_models/smplx/"
+echo "📌 TRUMANS: dataset/TRUMANS/Data_release/"
 echo "➡️  Next step: preprocessing"
 echo "============================================================"

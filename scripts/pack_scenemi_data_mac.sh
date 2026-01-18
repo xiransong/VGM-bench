@@ -2,58 +2,35 @@
 set -euo pipefail
 
 echo "============================================================"
-echo "[INFO] Packing SceneMI assets on macOS"
+echo "[INFO] Packing SceneMI data from staging directory (macOS)"
 echo "============================================================"
 
-# Base data dir on Mac
-MAC_DATA_ROOT="/Users/songxiran/data"
-
-# Output
+STAGING="$HOME/scenemi_transfer/staging"
 OUT_DIR="$HOME/scenemi_transfer"
-ARCHIVE="$OUT_DIR/scenemi_assets.tar.gz"
+ARCHIVE="$OUT_DIR/scenemi_data_final.tar.gz"
 
-mkdir -p "$OUT_DIR"
-
-###############################################################################
-# Prepare staging directory
-###############################################################################
-STAGING="$OUT_DIR/staging"
-rm -rf "$STAGING"
-mkdir -p "$STAGING/body_models"
-mkdir -p "$STAGING/datasets/TRUMANS/Data_release"
+if [ ! -d "$STAGING" ]; then
+  echo "[ERROR] Staging directory not found: $STAGING"
+  exit 1
+fi
 
 ###############################################################################
-# SMPL-X
+# Sanity checks
 ###############################################################################
-echo "[INFO] Adding SMPL-X models..."
-unzip -q "$MAC_DATA_ROOT/models_smplx_v1_1.zip" -d "$STAGING/body_models/smplx"
+echo "[INFO] Running sanity checks..."
 
-###############################################################################
-# TRUMANS (partial)
-###############################################################################
-echo "[INFO] Adding TRUMANS partial dataset..."
-
-TRUMANS_SRC="$MAC_DATA_ROOT/TRUMANS/Data_release"
-
-cp -v "$TRUMANS_SRC"/*.npy "$STAGING/datasets/TRUMANS/Data_release/" || true
-
-for z in \
-  Scene_mesh-*.zip \
-  Scene_occ_render-*.zip \
-  Scene-*.zip \
-  Object_all-*.zip \
-  Object_chairs-*.zip
-do
-  unzip -q "$TRUMANS_SRC/$z" -d "$STAGING/datasets/TRUMANS/Data_release/"
-done
+ls "$STAGING/body_models/smplx/SMPLX_MALE.npz" >/dev/null
+ls "$STAGING/body_models/smplx/SMPLX_FEMALE.npz" >/dev/null
+ls "$STAGING/body_models/smplx/SMPLX_NEUTRAL.npz" >/dev/null
+ls "$STAGING/datasets/TRUMANS/Data_release" >/dev/null
 
 ###############################################################################
 # Pack
 ###############################################################################
-echo "[INFO] Creating archive..."
+echo "[INFO] Creating tarball..."
 tar -czf "$ARCHIVE" -C "$STAGING" .
 
 echo "============================================================"
-echo "✅ SceneMI assets packed"
+echo "✅ SceneMI data packed successfully"
 echo "📦 Archive: $ARCHIVE"
 echo "============================================================"
