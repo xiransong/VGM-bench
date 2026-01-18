@@ -36,12 +36,6 @@ pip install \
   git+https://github.com/nghorbani/human_body_prior.git@4c246d8a83ce16d3cff9c79dcf04d81fa440a6bc \
   git+https://github.com/otaheri/chamfer_distance.git@f86f6f7cadd3aca642704573d1626c67ca2e2846
 
-echo "[INFO] Installing PyTorch3D (preprocessing-only)..."
-
-pip install \
-  git+https://github.com/facebookresearch/pytorch3d.git \
-  --no-build-isolation
-
 ###############################################################################
 # Sanity check
 ###############################################################################
