@@ -2,59 +2,54 @@
 set -euo pipefail
 
 echo "============================================================"
-echo "[UNPACK] Restoring SceneMI preprocessed dataset"
+echo "[UNPACK] SceneMI preprocess ← Lambda FS (NO compression)"
 echo "============================================================"
 
 ###############################################################################
-# Config
+# Configuration
 ###############################################################################
-ARCHIVE="/lambda/nfs/SceneMI/preprocess_120_betaFalse.tar.gz"
-DEST_DIR="$HOME/scratch/repos/SceneMI"
+SCRATCH_DIR="$HOME/scratch"
+LAMBDA_FS="/lambda/nfs/SceneMI"
+
+ARCHIVE_NAME="preprocess_120_betaFalse.tar"
+LOCAL_TAR="${SCRATCH_DIR}/${ARCHIVE_NAME}"
+LOCAL_SHA="${LOCAL_TAR}.sha256"
+
+REMOTE_TAR="${LAMBDA_FS}/${ARCHIVE_NAME}"
+REMOTE_SHA="${REMOTE_TAR}.sha256"
 
 ###############################################################################
 # Sanity checks
 ###############################################################################
-if [ ! -f "$ARCHIVE" ]; then
-  echo "[ERROR] Archive not found:"
-  echo "        $ARCHIVE"
-  exit 1
-fi
+echo "[INFO] Checking Lambda FS files..."
+test -f "$REMOTE_TAR" || { echo "[ERROR] Archive not found: $REMOTE_TAR"; exit 1; }
+test -f "$REMOTE_SHA" || { echo "[ERROR] Checksum not found: $REMOTE_SHA"; exit 1; }
 
-mkdir -p "$DEST_DIR"
+###############################################################################
+# Copy from Lambda FS to scratch
+###############################################################################
+echo "[INFO] Copying archive to local scratch..."
+cp "$REMOTE_TAR" "$LOCAL_TAR"
+cp "$REMOTE_SHA" "$LOCAL_SHA"
 
-echo "[INFO] Archive:"
-ls -lh "$ARCHIVE"
-
-echo "[INFO] Destination directory:"
-echo "       $DEST_DIR"
+###############################################################################
+# Verify checksum locally
+###############################################################################
+echo "[INFO] Verifying checksum on scratch disk..."
+(
+  cd "$SCRATCH_DIR"
+  sha256sum -c "$(basename "$LOCAL_SHA")"
+)
 
 ###############################################################################
 # Extract archive
 ###############################################################################
-echo "------------------------------------------------------------"
-echo "[INFO] Extracting archive (this may take a while)..."
-echo "------------------------------------------------------------"
+echo "[INFO] Extracting tar archive..."
+tar -C "$SCRATCH_DIR" -xf "$LOCAL_TAR"
 
-tar -xzf "$ARCHIVE" -C "$DEST_DIR"
-
-###############################################################################
-# Verification
-###############################################################################
-echo "------------------------------------------------------------"
-echo "[INFO] Verifying extraction..."
-echo "------------------------------------------------------------"
-
-EXTRACTED_DIR="${DEST_DIR}/preprocess_120_betaFalse"
-
-if [ ! -d "$EXTRACTED_DIR" ]; then
-  echo "[ERROR] Expected directory not found after extraction:"
-  echo "        $EXTRACTED_DIR"
-  exit 1
-fi
-
-du -sh "$EXTRACTED_DIR"
+echo "[INFO] Extraction completed:"
+ls -lh "$SCRATCH_DIR/preprocess_120_betaFalse"
 
 echo "============================================================"
-echo "✅ SceneMI preprocessed data restored successfully"
-echo "📂 Location: $EXTRACTED_DIR"
+echo "✅ Unpack completed successfully"
 echo "============================================================"
