@@ -15,7 +15,7 @@ SCENEMI_DIR="$HOME/scratch/repos/SceneMI"
 SCENEMI_BRANCH="xiran-dev"
 
 # Optional hard pin for full reproducibility (recommended for paper snapshots)
-SCENEMI_COMMIT="6dd66a4d6b0528f761f19325c1b3a359a64058f7"
+SCENEMI_COMMIT="b4c2a67b82a10e182ee848dfca698bd21fd78824"
 
 ###############################################################################
 # Preconditions

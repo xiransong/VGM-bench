@@ -55,7 +55,8 @@ pip install \
   pillow \
   einops \
   vit-pytorch \
-  smplx==0.1.28
+  smplx==0.1.28 \
+  wandb==0.16.6
 
 ###############################################################################
 # CLIP (import-only requirement)
