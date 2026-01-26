@@ -24,6 +24,7 @@ sudo apt install -y \
   git \
   curl \
   wget \
+  zip \
   unzip \
   tar \
   tmux \
