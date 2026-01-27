@@ -67,6 +67,7 @@ pip install \
   diffusers==0.24.0 \
   accelerate==0.21.0 \
   transformers==4.35.2 \
+  sentence-transformers==2.2.2 \
   --no-deps
 
 pip install torchmetrics==0.7.3 tensorboard

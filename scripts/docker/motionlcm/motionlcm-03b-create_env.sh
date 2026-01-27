@@ -56,7 +56,8 @@ echo "[INFO] Creating micromamba env at ${ENV_PREFIX} ..."
   huggingface_hub==0.19.4 \
   diffusers==0.24.0 \
   accelerate==0.21.0 \
-  transformers==4.35.2
+  transformers==4.35.2 \
+  sentence-transformers==2.2.2
 
 "$MICROMAMBA_BIN" run -p "${ENV_PREFIX}" pip install \
   torchmetrics==0.7.3 \

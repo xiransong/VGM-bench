@@ -14,7 +14,7 @@ REPO_NAME="MotionLCM"
 REPO_DIR="$REPO_ROOT/$REPO_NAME"
 
 BRANCH_NAME="xiran-dev"
-PINNED_COMMIT="9ccba2678ad2af011fd6a5450a9605bf2638281d"
+PINNED_COMMIT="6e4053d0e94b26070c7e607448dc8af50983e41f"
 
 ###############################################################################
 # Prepare directory
